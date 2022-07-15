@@ -11,6 +11,7 @@ class Deck extends React.Component {
         deck_id:""
         , remaining: null,
          cards: null,
+         drawn: null,
         };
         this.drawCard = this.drawCard.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -19,16 +20,30 @@ class Deck extends React.Component {
     async componentDidMount(){
         //deck variable contains the response
         let deck = await axios.get(`${API_URL}/new/shuffle`);
-        const {deck_id, remaining}  = deck.data;
-        this.setState({ deck_id, remaining });
+        this.setState({ deck: deck.data });
     }
 
 
     async drawCard(){
            //refactor axios request to get specific data
-            let response = await axios.get(`${API_URL}/${this.state.deck_id}/draw/?count=1`);
-            const {cards} = response.data;
-            this.setState({ cards, remaining });
+           try{
+            let cardRes = await axios.get(`${API_URL}/${this.state.deck_id}/draw/?count=1`);
+            if(!cardRes.data.success){
+                throw new Error("No card remaining!")
+            }
+            let card = cardRes.data.cards[0];
+    
+            this.setState(st => ({
+                drawn: [
+                    ...st.drawn,
+                     {id: card.code,
+                      image: card.image,
+                      name: `${card.value} of ${card.suit}`}
+                ]
+            }))
+        } catch(err){
+            alert(err);
+        }     
     }
 
     handleClick(evt){
@@ -36,11 +51,14 @@ class Deck extends React.Component {
     }
 
     render(){
+        let cards = this.state.drawn.map(c => (
+            <Card name={c.name} image={c.image} />
+        ));
         return(
         <div>
             <h1>CARD DEALER</h1>
             <button onClick={this.handleClick}>DEAL ME A CARD</button>
-            <Card />
+            {cards}
         </div>
         )
     }
