@@ -2,14 +2,13 @@ import React from 'react';
 import axios from 'axios';
 import Card from './Card';
 
+
 const API_URL = `https://www.deckofcardsapi.com/api/deck`;
 
 class Deck extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-        deck_id:""
-        , remaining: null,
          cards: null,
          drawn: null,
         };
@@ -27,7 +26,7 @@ class Deck extends React.Component {
     async drawCard(){
            //refactor axios request to get specific data
            try{
-            let cardRes = await axios.get(`${API_URL}/${this.state.deck_id}/draw/?count=1`);
+            let cardRes = await axios.get(`${API_URL}/${this.state.deck_id}/draw/`);
             if(!cardRes.data.success){
                 throw new Error("No card remaining!")
             }
@@ -36,9 +35,11 @@ class Deck extends React.Component {
             this.setState(st => ({
                 drawn: [
                     ...st.drawn,
-                     {id: card.code,
+                     {
+                      id: card.code,
                       image: card.image,
-                      name: `${card.value} of ${card.suit}`}
+                      name: `${card.value} of ${card.suit}`
+                    }
                 ]
             }))
         } catch(err){
@@ -57,8 +58,8 @@ class Deck extends React.Component {
         return(
         <div>
             <h1>CARD DEALER</h1>
-            <button onClick={this.handleClick}>DEAL ME A CARD</button>
-            {cards}
+            <button onClick={this.drawCard}>DEAL ME A CARD!</button>
+            <div className='Deck-cardarea'>{cards}</div>
         </div>
         )
     }
