@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Card from './Card';
 
-const API_URL = `https://www.deckofcardsapi.com/api/deck/new/`;
+const API_URL = `https://www.deckofcardsapi.com/api/deck/new/shuffle`;
 
 class Deck extends React.Component {
     constructor(props){
@@ -17,8 +17,9 @@ class Deck extends React.Component {
     }
 
     async componentDidMount(){
-        let response = await axios.get(API_URL);
-        const {deck_id, remaining}  = response.data;
+        //deck variable contains the response
+        let deck = await axios.get(API_URL);
+        const {deck_id, remaining}  = deck.data;
         this.setState({ deck_id, remaining });
     }
 
